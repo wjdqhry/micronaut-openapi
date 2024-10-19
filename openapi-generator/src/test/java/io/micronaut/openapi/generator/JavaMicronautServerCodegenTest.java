@@ -588,9 +588,9 @@ class JavaMicronautServerCodegenTest extends AbstractMicronautCodegenTest {
                 """
         );
         assertFileNotContains(path + "model/BaseInvoiceDto.java", """
-                        this.docType = docType;
-                        this.sellerVatId = sellerVatId;
-                """
+                    this.docType = docType;
+                    this.sellerVatId = sellerVatId;
+            """
         );
     }
 
@@ -604,41 +604,41 @@ class JavaMicronautServerCodegenTest extends AbstractMicronautCodegenTest {
 
         assertFileContains(path + "api/ParametersApi.java",
             """
-                        /**
-                         * A method to send primitives as request parameters
-                         *
-                         * @param name (required)
-                         *        Deprecated: Deprecated message2
-                         * @param age (required)
-                         * @param height (required)
-                         *        Deprecated: Deprecated message4
-                         * @return Success (status code 200)
-                         *         or An unexpected error has occurred (status code default)
-                         * @deprecated Deprecated message1
-                         */
-                        @Deprecated
-                        @Operation(
-                            operationId = "sendPrimitives",
-                            description = "A method to send primitives as request parameters",
-                            deprecated = true,
-                            responses = {
-                                @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SendPrimitivesResponse.class))),
-                                @ApiResponse(responseCode = "default", description = "An unexpected error has occurred")
-                            },
-                            parameters = {
-                                @Parameter(name = "name", deprecated = true, required = true, in = ParameterIn.PATH),
-                                @Parameter(name = "age", required = true, in = ParameterIn.QUERY),
-                                @Parameter(name = "height", deprecated = true, required = true, in = ParameterIn.HEADER)
-                            }
-                        )
-                        @Get("/sendPrimitives/{name}")
-                        @Secured(SecurityRule.IS_ANONYMOUS)
-                        Mono<@Valid SendPrimitivesResponse> sendPrimitives(
-                            @PathVariable("name") @NotNull @Deprecated String name,
-                            @QueryValue("age") @NotNull BigDecimal age,
-                            @Header("height") @NotNull @Deprecated Float height
-                        );
-                    """);
+                    /**
+                     * A method to send primitives as request parameters
+                     *
+                     * @param name (required)
+                     *        Deprecated: Deprecated message2
+                     * @param age (required)
+                     * @param height (required)
+                     *        Deprecated: Deprecated message4
+                     * @return Success (status code 200)
+                     *         or An unexpected error has occurred (status code default)
+                     * @deprecated Deprecated message1
+                     */
+                    @Deprecated
+                    @Operation(
+                        operationId = "sendPrimitives",
+                        description = "A method to send primitives as request parameters",
+                        deprecated = true,
+                        responses = {
+                            @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SendPrimitivesResponse.class))),
+                            @ApiResponse(responseCode = "default", description = "An unexpected error has occurred")
+                        },
+                        parameters = {
+                            @Parameter(name = "name", deprecated = true, required = true, in = ParameterIn.PATH),
+                            @Parameter(name = "age", required = true, in = ParameterIn.QUERY),
+                            @Parameter(name = "height", deprecated = true, required = true, in = ParameterIn.HEADER)
+                        }
+                    )
+                    @Get("/sendPrimitives/{name}")
+                    @Secured(SecurityRule.IS_ANONYMOUS)
+                    Mono<@Valid SendPrimitivesResponse> sendPrimitives(
+                        @PathVariable("name") @NotNull @Deprecated String name,
+                        @QueryValue("age") @NotNull BigDecimal age,
+                        @Header("height") @NotNull @Deprecated Float height
+                    );
+                """);
     }
 
     @Test
@@ -682,6 +682,39 @@ class JavaMicronautServerCodegenTest extends AbstractMicronautCodegenTest {
                 """,
             """
                 @QueryValue("negativeOrZeroParam") @NotNull List<@NotNull(message = "This is required int message") @NegativeOrZero(message = "This is negative or zero message") Integer> negativeOrZeroParam,
+                """);
+    }
+
+    @Test
+    void testSwaggerAnnotations() {
+
+        var codegen = new JavaMicronautServerCodegen();
+        codegen.setGenerateSwaggerAnnotations(true);
+        String outputPath = generateFiles(codegen, "src/test/resources/petstore.json", CodegenConstants.APIS, CodegenConstants.MODELS);
+        String path = outputPath + "src/main/java/org/openapitools/";
+
+        assertFileContains(path + "api/PetApi.java",
+            """
+                    @Operation(
+                        operationId = "findPetsByStatus",
+                        summary = "Finds Pets by status",
+                        description = "Multiple status values can be provided with comma separated strings",
+                        responses = {
+                            @ApiResponse(responseCode = "200", description = "successful operation", content = {
+                                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Pet.class))),
+                                @Content(mediaType = "application/xml", array = @ArraySchema(schema = @Schema(implementation = Pet.class)))
+                            }),
+                            @ApiResponse(responseCode = "400", description = "Invalid status value")
+                        },
+                        parameters = @Parameter(name = "status", description = "Status values that need to be considered for filter", in = ParameterIn.QUERY),
+                        security = @SecurityRequirement(name = "petstore_auth", scopes = {"write:pets", "read:pets"})
+                    )
+                    @Get("/pet/findByStatus")
+                    @Produces({"application/json", "application/xml"})
+                    @Secured({"write:pets", "read:pets"})
+                    Mono<@NotNull List<@Valid Pet>> findPetsByStatus(
+                        @QueryValue(value = "status", defaultValue = "[\\"available\\"]") @Nullable(inherited = true) List<@NotNull String> status
+                    );
                 """);
     }
 }

@@ -657,12 +657,12 @@ class KotlinMicronautServerCodegenTest extends AbstractMicronautCodegenTest {
         String path = outputPath + "src/main/kotlin/org/openapitools/";
 
         assertFileContains(path + "model/CurrencyInvoiceCreateDto.kt", """
-                    @field:NotNull
-                    @field:Size(max = 10)
-                    @field:Schema(name = "sellerVatId", requiredMode = Schema.RequiredMode.REQUIRED)
-                    @field:JsonProperty(JSON_PROPERTY_SELLER_VAT_ID)
-                    override var sellerVatId: String,
-                """
+                @field:NotNull
+                @field:Size(max = 10)
+                @field:Schema(name = "sellerVatId", requiredMode = Schema.RequiredMode.REQUIRED)
+                @field:JsonProperty(JSON_PROPERTY_SELLER_VAT_ID)
+                override var sellerVatId: String,
+            """
         );
     }
 
@@ -688,7 +688,6 @@ class KotlinMicronautServerCodegenTest extends AbstractMicronautCodegenTest {
                      *
                      * @deprecated Deprecated message1
                      */
-                    @Suppress("DEPRECATED_JAVA_ANNOTATION")
                     @Deprecated("Deprecated message1")
                     @Operation(
                         operationId = "sendPrimitives",
@@ -755,6 +754,43 @@ class KotlinMicronautServerCodegenTest extends AbstractMicronautCodegenTest {
                 """,
             """
                 @QueryValue("negativeOrZeroParam") @NotNull negativeOrZeroParam: List<@NotNull(message = "This is required int message") @NegativeOrZero(message = "This is negative or zero message") Int>,
+                """);
+    }
+
+    @Test
+    void testSwaggerAnnotations() {
+
+        var codegen = new KotlinMicronautServerCodegen();
+        codegen.setGenerateSwaggerAnnotations(true);
+        String outputPath = generateFiles(codegen, "src/test/resources/petstore.json", CodegenConstants.APIS, CodegenConstants.MODELS);
+        String path = outputPath + "src/main/kotlin/org/openapitools/";
+
+        assertFileContains(path + "api/PetApi.kt",
+            """
+                    @Operation(
+                        operationId = "findPetsByStatus",
+                        summary = "Finds Pets by status",
+                        description = "Multiple status values can be provided with comma separated strings",
+                        responses = [
+                            ApiResponse(responseCode = "200", description = "successful operation", content = [
+                                Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Pet::class))),
+                                Content(mediaType = "application/xml", array = ArraySchema(schema = Schema(implementation = Pet::class)))
+                            ]),
+                            ApiResponse(responseCode = "400", description = "Invalid status value")
+                        ],
+                        parameters = [
+                            Parameter(name = "status", description = "Status values that need to be considered for filter", `in` = ParameterIn.QUERY)
+                        ],
+                        security = [
+                            SecurityRequirement(name = "petstore_auth", scopes = ["write:pets", "read:pets"])
+                        ]
+                    )
+                    @Get("/pet/findByStatus")
+                    @Produces("application/json", "application/xml")
+                    @Secured("write:pets", "read:pets")
+                    fun findPetsByStatus(
+                        @QueryValue("status") @Nullable status: List<@NotNull String>?
+                    ): Mono<List<Pet>>
                 """);
     }
 }
