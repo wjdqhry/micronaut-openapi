@@ -955,7 +955,7 @@ class JavaMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
                     @JsonProperty("3")
                     THE_THREE(3),
                 """
-            );
+        );
 
         assertFileContains(modelPath + "LongEnum.java",
             """
@@ -974,36 +974,36 @@ class JavaMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
 
         assertFileContains(basePath + "api/ParametersApi.java",
             "@QueryValue(\"name\") @NotNull String name",
-                "@QueryValue(\"byteType\") @NotNull Byte byteType",
-                "@QueryValue(\"byteType2\") @NotNull Byte byteType2",
-                "@QueryValue(\"shortType\") @NotNull Short shortType",
-                "@QueryValue(\"shortType2\") @NotNull Short shortType2",
-                "@QueryValue(\"intType\") @NotNull Integer intType",
-                "@QueryValue(\"longType\") @NotNull Long longType",
-                "@QueryValue(\"boolType\") @NotNull Boolean boolType",
-                "@QueryValue(\"decimalType\") @NotNull BigDecimal decimalType",
-                "@QueryValue(\"floatType\") @NotNull Float floatType",
-                "@QueryValue(\"doubleType\") @NotNull Double doubleType",
-                "@QueryValue(\"bytePrimitiveType\") @NotNull Byte bytePrimitiveType",
-                "@QueryValue(\"shortPrimitiveType\") @NotNull Short shortPrimitiveType",
-                "@QueryValue(\"intPrimitiveType\") @NotNull Integer intPrimitiveType",
-                "@QueryValue(\"longPrimitiveType\") @NotNull Long longPrimitiveType",
-                "@QueryValue(\"floatPrimitiveType\") @NotNull Float floatPrimitiveType",
-                "@QueryValue(\"doublePrimitiveType\") @NotNull Double doublePrimitiveType",
-                "@QueryValue(\"charPrimitiveType\") @NotNull Character charPrimitiveType",
-                "@QueryValue(\"bytePrimitiveTypes\") @NotNull List<Byte> bytePrimitiveTypes",
-                "@QueryValue(\"shortPrimitiveTypes\") @NotNull List<Short> shortPrimitiveTypes",
-                "@QueryValue(\"intPrimitiveTypes\") @NotNull List<Integer> intPrimitiveTypes",
-                "@QueryValue(\"longPrimitiveTypes\") @NotNull List<Long> longPrimitiveTypes",
-                "@QueryValue(\"floatPrimitiveTypes\") @NotNull List<Float> floatPrimitiveTypes",
-                "@QueryValue(\"doublePrimitiveTypes\") @NotNull List<Double> doublePrimitiveTypes",
-                "@QueryValue(\"charPrimitiveTypes\") @NotNull List<Character> charPrimitiveTypes",
-                "@QueryValue(\"byteTypes\") @NotNull List<@NotNull Byte> byteTypes",
-                "@QueryValue(\"byteTypes2\") @NotNull List<@NotNull Byte> byteTypes2",
-                "@QueryValue(\"shortTypes\") @NotNull List<@NotNull Short> shortTypes",
-                "@QueryValue(\"shortTypes2\") @NotNull List<@NotNull Short> shortTypes2",
-                "@QueryValue(\"intTypes\") @NotNull List<@NotNull Integer> intTypes",
-                "@QueryValue(\"longTypes\") @NotNull List<@NotNull Long> longTypes"
+            "@QueryValue(\"byteType\") @NotNull Byte byteType",
+            "@QueryValue(\"byteType2\") @NotNull Byte byteType2",
+            "@QueryValue(\"shortType\") @NotNull Short shortType",
+            "@QueryValue(\"shortType2\") @NotNull Short shortType2",
+            "@QueryValue(\"intType\") @NotNull Integer intType",
+            "@QueryValue(\"longType\") @NotNull Long longType",
+            "@QueryValue(\"boolType\") @NotNull Boolean boolType",
+            "@QueryValue(\"decimalType\") @NotNull BigDecimal decimalType",
+            "@QueryValue(\"floatType\") @NotNull Float floatType",
+            "@QueryValue(\"doubleType\") @NotNull Double doubleType",
+            "@QueryValue(\"bytePrimitiveType\") @NotNull Byte bytePrimitiveType",
+            "@QueryValue(\"shortPrimitiveType\") @NotNull Short shortPrimitiveType",
+            "@QueryValue(\"intPrimitiveType\") @NotNull Integer intPrimitiveType",
+            "@QueryValue(\"longPrimitiveType\") @NotNull Long longPrimitiveType",
+            "@QueryValue(\"floatPrimitiveType\") @NotNull Float floatPrimitiveType",
+            "@QueryValue(\"doublePrimitiveType\") @NotNull Double doublePrimitiveType",
+            "@QueryValue(\"charPrimitiveType\") @NotNull Character charPrimitiveType",
+            "@QueryValue(\"bytePrimitiveTypes\") @NotNull List<Byte> bytePrimitiveTypes",
+            "@QueryValue(\"shortPrimitiveTypes\") @NotNull List<Short> shortPrimitiveTypes",
+            "@QueryValue(\"intPrimitiveTypes\") @NotNull List<Integer> intPrimitiveTypes",
+            "@QueryValue(\"longPrimitiveTypes\") @NotNull List<Long> longPrimitiveTypes",
+            "@QueryValue(\"floatPrimitiveTypes\") @NotNull List<Float> floatPrimitiveTypes",
+            "@QueryValue(\"doublePrimitiveTypes\") @NotNull List<Double> doublePrimitiveTypes",
+            "@QueryValue(\"charPrimitiveTypes\") @NotNull List<Character> charPrimitiveTypes",
+            "@QueryValue(\"byteTypes\") @NotNull List<@NotNull Byte> byteTypes",
+            "@QueryValue(\"byteTypes2\") @NotNull List<@NotNull Byte> byteTypes2",
+            "@QueryValue(\"shortTypes\") @NotNull List<@NotNull Short> shortTypes",
+            "@QueryValue(\"shortTypes2\") @NotNull List<@NotNull Short> shortTypes2",
+            "@QueryValue(\"intTypes\") @NotNull List<@NotNull Integer> intTypes",
+            "@QueryValue(\"longTypes\") @NotNull List<@NotNull Long> longTypes"
         );
 
         assertFileContains(basePath + "model/Obj.java",
@@ -1320,14 +1320,47 @@ class JavaMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
 
         assertFileContains(path + "model/Book.java",
             """
-                    @Serdeable
-                    @Generated("io.micronaut.openapi.generator.JavaMicronautClientCodegen")
-                    @Serializable
-                    public class Book {
-                    
-                        @Override
-                    """);
+                @Serdeable
+                @Generated("io.micronaut.openapi.generator.JavaMicronautClientCodegen")
+                @Serializable
+                public class Book {
+                
+                    @Override
+                """);
 
         System.clearProperty("micronaut.test.no-vars");
+    }
+
+    @Test
+    void testSwaggerAnnotations() {
+
+        var codegen = new JavaMicronautClientCodegen();
+        codegen.setGenerateSwaggerAnnotations(true);
+        String outputPath = generateFiles(codegen, "src/test/resources/petstore.json", CodegenConstants.APIS, CodegenConstants.MODELS);
+        String path = outputPath + "src/main/java/org/openapitools/";
+
+        assertFileContains(path + "api/PetApi.java",
+            """
+                    @Operation(
+                        operationId = "findPetsByStatus",
+                        summary = "Finds Pets by status",
+                        description = "Multiple status values can be provided with comma separated strings",
+                        responses = {
+                            @ApiResponse(responseCode = "200", description = "successful operation", content = {
+                                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Pet.class))),
+                                @Content(mediaType = "application/xml", array = @ArraySchema(schema = @Schema(implementation = Pet.class)))
+                            }),
+                            @ApiResponse(responseCode = "400", description = "Invalid status value")
+                        },
+                        parameters = @Parameter(name = "status", description = "Status values that need to be considered for filter", in = ParameterIn.QUERY)
+                            ,
+                        security = @SecurityRequirement(name = "petstore_auth", scopes = {"write:pets", "read:pets"})
+                    )
+                    @Get("/pet/findByStatus")
+                    @Consumes({"application/json", "application/xml"})
+                    Mono<@NotNull List<@Valid Pet>> findPetsByStatus(
+                        @QueryValue(value = "status", defaultValue = "[\\"available\\"]") @Nullable List<@NotNull String> status
+                    );
+                """);
     }
 }

@@ -56,7 +56,7 @@
     {{/responses.1}}{{#responses}}{{#responses.1}}
             {{/responses.1}}@ApiResponse(responseCode = "{{{code}}}", description = "{{{message}}}"{{#baseType}}, content = {{#produces.1}}{{openbrace}}
                 {{#produces}}
-                @Content(mediaType = "{{{mediaType}}}", {{#isArray}}array = @ArraySchema({{/isArray}}schema = @Schema(implementation = {{{baseType}}}.class)){{#isArray}}){{/isArray}}){{^-last}},{{/-last}}
+                @Content(mediaType = "{{{mediaType}}}", {{#isArray}}array = @ArraySchema({{/isArray}}schema = @Schema(implementation = {{{baseType}}}.class){{#isArray}}){{/isArray}}){{^-last}},{{/-last}}
                 {{/produces}}
             {{closebrace}}{{/produces.1}}{{^produces.1}}{{#produces}}@Content(mediaType = "{{{mediaType}}}", {{#isArray}}array = @ArraySchema({{/isArray}}schema = @Schema(implementation = {{{baseType}}}.class)){{#isArray}}){{/isArray}}{{/produces}}{{/produces.1}}{{/baseType}}){{^-last}},{{/-last}}{{#responses.1}}
             {{/responses.1}}{{/responses}}{{#responses.1}}

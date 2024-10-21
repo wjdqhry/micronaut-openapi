@@ -777,7 +777,7 @@ class KotlinMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
         assertFileContains(path + "model/FileCreateDto.kt",
             """
                 data class FileCreateDto(
-
+                
                     /**
                      * Customer type ORG
                      */
@@ -1070,7 +1070,6 @@ class KotlinMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
                      *
                      * @deprecated Deprecated message1
                      */
-                    @Suppress("DEPRECATED_JAVA_ANNOTATION")
                     @Deprecated("Deprecated message1")
                     @Operation(
                         operationId = "sendPrimitives",
@@ -1306,4 +1305,39 @@ class KotlinMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
         System.clearProperty("micronaut.test.no-vars");
     }
 
+    @Test
+    void testSwaggerAnnotations() {
+
+        var codegen = new KotlinMicronautClientCodegen();
+        codegen.setGenerateSwaggerAnnotations(true);
+        String outputPath = generateFiles(codegen, "src/test/resources/petstore.json", CodegenConstants.APIS, CodegenConstants.MODELS);
+        String path = outputPath + "src/main/kotlin/org/openapitools/";
+
+        assertFileContains(path + "api/PetApi.kt",
+            """
+                    @Operation(
+                        operationId = "findPetsByStatus",
+                        summary = "Finds Pets by status",
+                        description = "Multiple status values can be provided with comma separated strings",
+                        responses = [
+                            ApiResponse(responseCode = "200", description = "successful operation", content = [
+                                Content(mediaType = "application/json", array = ArraySchema(schema = Schema(implementation = Pet::class))),
+                                Content(mediaType = "application/xml", array = ArraySchema(schema = Schema(implementation = Pet::class)))
+                            ]),
+                            ApiResponse(responseCode = "400", description = "Invalid status value")
+                        ],
+                        parameters = [
+                            Parameter(name = "status", description = "Status values that need to be considered for filter", `in` = ParameterIn.QUERY)
+                        ],
+                        security = [
+                            SecurityRequirement(name = "petstore_auth", scopes = ["write:pets", "read:pets"])
+                        ]
+                    )
+                    @Get("/pet/findByStatus")
+                    @Consumes("application/json", "application/xml")
+                    fun findPetsByStatus(
+                        @QueryValue("status") @Nullable status: List<@NotNull String>? = null
+                    ): Mono<List<Pet>>
+                """);
+    }
 }

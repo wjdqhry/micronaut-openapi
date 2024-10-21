@@ -34,7 +34,6 @@
     {{/externalDocs}}
      */
     {{#generateSwagger2Annotations}}
-    @Suppress("DEPRECATED_JAVA_ANNOTATION")
         {{#isDeprecated}}
     @Deprecated("{{#vendorExtensions.x-deprecated-message}}{{{.}}}{{/vendorExtensions.x-deprecated-message}}")
         {{/isDeprecated}}
@@ -54,7 +53,7 @@
             {{#responses}}
             ApiResponse(responseCode = "{{{code}}}", description = "{{{message}}}"{{#baseType}}, content = [
                 {{#produces}}
-                Content(mediaType = "{{{mediaType}}}", schema = Schema(implementation = {{{baseType}}}::class)){{^-last}},{{/-last}}
+                Content(mediaType = "{{{mediaType}}}", {{#isArray}}array = ArraySchema({{/isArray}}schema = Schema(implementation = {{{baseType}}}::class){{#isArray}}){{/isArray}}){{^-last}},{{/-last}}
                 {{/produces}}
             ]{{/baseType}}){{^-last}},{{/-last}}
             {{/responses}}
