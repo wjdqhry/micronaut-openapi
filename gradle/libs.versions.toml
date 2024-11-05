@@ -39,7 +39,7 @@ micronaut-test = "4.5.0"
 micronaut-kotlin = "4.5.0"
 micronaut-logging = "1.5.0"
 micronaut-session = "4.5.0"
-micronaut-grpc = "4.7.1"
+micronaut-grpc = "4.8.0"
 micronaut-spring = "5.9.0"
 micronaut-docs = "2.0.0"
 
