@@ -138,10 +138,7 @@ abstract class AbstractViewConfig implements Toggleable {
         }
 
         // process micronaut.server.context-path
-        String contextPath = ConfigUtils.getConfigProperty(MICRONAUT_SERVER_CONTEXT_PATH, context);
-        if (contextPath == null) {
-            contextPath = StringUtils.EMPTY_STRING;
-        }
+        String contextPath = ConfigUtils.getServerContextPath(context);
         finalUrl += contextPath.startsWith(SLASH) ? contextPath.substring(1) : contextPath;
         if (!finalUrl.endsWith(SLASH)) {
             finalUrl += SLASH;
