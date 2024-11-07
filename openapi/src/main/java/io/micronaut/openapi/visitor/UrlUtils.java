@@ -22,7 +22,6 @@ import io.micronaut.inject.visitor.VisitorContext;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.micronaut.openapi.visitor.OpenApiConfigProperty.MICRONAUT_SERVER_CONTEXT_PATH;
 import static io.micronaut.openapi.visitor.StringUtil.CLOSE_BRACE;
 import static io.micronaut.openapi.visitor.StringUtil.DOLLAR;
 import static io.micronaut.openapi.visitor.StringUtil.OPEN_BRACE;
@@ -61,7 +60,7 @@ public final class UrlUtils {
             prevSegment = segment;
         }
 
-        String contextPath = ConfigUtils.getConfigProperty(MICRONAUT_SERVER_CONTEXT_PATH, context);
+        String contextPath = ConfigUtils.getServerContextPath(context);
         if (StringUtils.isNotEmpty(contextPath)) {
             if (!contextPath.startsWith(SLASH) && !contextPath.startsWith(DOLLAR)) {
                 contextPath = SLASH + contextPath;

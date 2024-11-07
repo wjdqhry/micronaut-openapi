@@ -105,7 +105,10 @@ import static io.micronaut.openapi.visitor.OpenApiConfigProperty.MICRONAUT_OPENA
 import static io.micronaut.openapi.visitor.OpenApiConfigProperty.MICRONAUT_OPENAPI_SECURITY_ENABLED;
 import static io.micronaut.openapi.visitor.OpenApiConfigProperty.MICRONAUT_OPENAPI_SWAGGER_FILE_GENERATION_ENABLED;
 import static io.micronaut.openapi.visitor.OpenApiConfigProperty.MICRONAUT_OPENAPI_VERSIONING_ENABLED;
+import static io.micronaut.openapi.visitor.OpenApiConfigProperty.MICRONAUT_SERVER_CONTEXT_PATH;
 import static io.micronaut.openapi.visitor.OpenApiConfigProperty.OPENAPI_CONFIG_FILE;
+import static io.micronaut.openapi.visitor.OpenApiConfigProperty.SPRING_SERVER_CONTEXT_PATH;
+import static io.micronaut.openapi.visitor.OpenApiConfigProperty.SPRING_WEBFLUX_BASE_PATH;
 import static io.micronaut.openapi.visitor.StringUtil.COMMA;
 import static io.micronaut.openapi.visitor.StringUtil.DOT;
 import static io.micronaut.openapi.visitor.StringUtil.UNDERSCORE;
@@ -250,6 +253,22 @@ public final class ConfigUtils {
             key.append('>');
         }
         return key.toString();
+    }
+
+    @NonNull
+    public static String getServerContextPath(VisitorContext context) {
+        var contextPath = getConfigProperty(MICRONAUT_SERVER_CONTEXT_PATH, context);
+        if (contextPath == null) {
+            contextPath = getConfigProperty(SPRING_SERVER_CONTEXT_PATH, context);
+        }
+        if (contextPath == null) {
+            contextPath = getConfigProperty(SPRING_WEBFLUX_BASE_PATH, context);
+        }
+        if (contextPath == null) {
+            contextPath = StringUtils.EMPTY_STRING;
+        }
+
+        return contextPath;
     }
 
     public static DuplicateResolution getSchemaDuplicateResolution(VisitorContext context) {

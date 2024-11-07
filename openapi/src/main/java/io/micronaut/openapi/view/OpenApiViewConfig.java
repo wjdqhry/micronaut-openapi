@@ -51,7 +51,6 @@ import static io.micronaut.openapi.visitor.ContextUtils.warn;
 import static io.micronaut.openapi.visitor.FileUtils.readFile;
 import static io.micronaut.openapi.visitor.FileUtils.resolve;
 import static io.micronaut.openapi.visitor.OpenApiConfigProperty.MICRONAUT_OPENAPI_CONTEXT_SERVER_PATH;
-import static io.micronaut.openapi.visitor.OpenApiConfigProperty.MICRONAUT_SERVER_CONTEXT_PATH;
 import static io.micronaut.openapi.visitor.StringUtil.COMMA;
 import static io.micronaut.openapi.visitor.StringUtil.DOLLAR;
 import static io.micronaut.openapi.visitor.StringUtil.SLASH;
@@ -436,10 +435,7 @@ public final class OpenApiViewConfig {
         }
 
         // process micronaut.server.context-path
-        String contextPath = ConfigUtils.getConfigProperty(MICRONAUT_SERVER_CONTEXT_PATH, context);
-        if (contextPath == null) {
-            contextPath = StringUtils.EMPTY_STRING;
-        }
+        String contextPath = ConfigUtils.getServerContextPath(context);
         finalUrl += contextPath.startsWith(SLASH) ? contextPath.substring(1) : contextPath;
         if (!finalUrl.endsWith(SLASH)) {
             finalUrl += SLASH;

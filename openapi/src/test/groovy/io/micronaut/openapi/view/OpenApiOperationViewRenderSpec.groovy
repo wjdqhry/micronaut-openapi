@@ -300,6 +300,7 @@ class OpenApiOperationViewRenderSpec extends Specification {
         indexHtml.contains('clientSecret: "bar"')
     }
 
+    @RestoreSystemProperties
     void "test generates urlResourcesPrefix context-path and openapi.context.path"() {
         given:
         System.setProperty(OpenApiConfigProperty.MICRONAUT_SERVER_CONTEXT_PATH, "/local-path")
@@ -321,10 +322,54 @@ class OpenApiOperationViewRenderSpec extends Specification {
 
         urlPrefix
         urlPrefix == '/server-context-path/local-path/swagger-ui/res/'
+    }
 
-        cleanup:
-        System.clearProperty(OpenApiConfigProperty.MICRONAUT_SERVER_CONTEXT_PATH)
-        System.clearProperty(OpenApiConfigProperty.MICRONAUT_OPENAPI_CONTEXT_SERVER_PATH)
+    @RestoreSystemProperties
+    void "test generates urlResourcesPrefix spring context-path and openapi.context.path"() {
+        given:
+        System.setProperty(OpenApiConfigProperty.SPRING_SERVER_CONTEXT_PATH, "/local-path")
+        System.setProperty(OpenApiConfigProperty.MICRONAUT_OPENAPI_CONTEXT_SERVER_PATH, "/server-context-path")
+        String spec = "swagger-ui.enabled=true"
+        OpenApiViewConfig cfg = OpenApiViewConfig.fromSpecification(spec, null, new Properties(), null)
+        Path outputDir = Paths.get("output")
+        cfg.title = "OpenAPI documentation"
+        cfg.specFile = "swagger.yml"
+        cfg.render(outputDir, null)
+
+        expect:
+        cfg.enabled
+        cfg.swaggerUIConfig != null
+        cfg.title == "OpenAPI documentation"
+        cfg.specFile == "swagger.yml"
+
+        String urlPrefix = cfg.swaggerUIConfig.getFinalUrlPrefix(OpenApiViewConfig.RendererType.SWAGGER_UI, null)
+
+        urlPrefix
+        urlPrefix == '/server-context-path/local-path/swagger-ui/res/'
+    }
+
+    @RestoreSystemProperties
+    void "test generates urlResourcesPrefix spring webflux context-path and openapi.context.path"() {
+        given:
+        System.setProperty(OpenApiConfigProperty.SPRING_WEBFLUX_BASE_PATH, "/local-path")
+        System.setProperty(OpenApiConfigProperty.MICRONAUT_OPENAPI_CONTEXT_SERVER_PATH, "/server-context-path")
+        String spec = "swagger-ui.enabled=true"
+        OpenApiViewConfig cfg = OpenApiViewConfig.fromSpecification(spec, null, new Properties(), null)
+        Path outputDir = Paths.get("output")
+        cfg.title = "OpenAPI documentation"
+        cfg.specFile = "swagger.yml"
+        cfg.render(outputDir, null)
+
+        expect:
+        cfg.enabled
+        cfg.swaggerUIConfig != null
+        cfg.title == "OpenAPI documentation"
+        cfg.specFile == "swagger.yml"
+
+        String urlPrefix = cfg.swaggerUIConfig.getFinalUrlPrefix(OpenApiViewConfig.RendererType.SWAGGER_UI, null)
+
+        urlPrefix
+        urlPrefix == '/server-context-path/local-path/swagger-ui/res/'
     }
 
     void "test generates urlResourcesPrefix only context-path"() {

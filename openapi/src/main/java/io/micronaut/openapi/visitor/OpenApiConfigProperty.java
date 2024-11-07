@@ -77,6 +77,14 @@ public interface OpenApiConfigProperty {
      */
     String MICRONAUT_SERVER_CONTEXT_PATH = "micronaut.server.context-path";
     /**
+     * Context path property for spring boot applications.
+     */
+    String SPRING_SERVER_CONTEXT_PATH = "server.servlet.context-path";
+    /**
+     * Context path property for reactive spring boot applications.
+     */
+    String SPRING_WEBFLUX_BASE_PATH = "spring.webflux.base-path";
+    /**
      * Loaded micronaut-http-server-netty property (json-view.enabled).
      */
     String MICRONAUT_JACKSON_JSON_VIEW_ENABLED = "jackson.json-view.enabled";

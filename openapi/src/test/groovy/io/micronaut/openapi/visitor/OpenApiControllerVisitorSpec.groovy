@@ -2498,6 +2498,80 @@ class MyBean {}
         paths."/server-context-path/local-path/test/save/{id}".get
     }
 
+    @RestoreSystemProperties
+    void "test append spring server.servlet.context-path to endpoints"() {
+        given:
+        System.setProperty(OpenApiConfigProperty.SPRING_SERVER_CONTEXT_PATH, "/local-path")
+        System.setProperty(OpenApiConfigProperty.MICRONAUT_OPENAPI_CONTEXT_SERVER_PATH, "/server-context-path")
+
+        buildBeanDefinition('test.MyBean', '''
+package test;
+
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import jakarta.inject.Singleton;
+
+@Controller("/test")
+class TestController {
+
+    @Get("/save{/id}")
+    String save() {
+        return null;
+    }
+}
+
+@Singleton
+class MyBean {}
+''')
+        when:
+        OpenAPI openAPI = Utils.testReference
+        def paths = openAPI.paths
+
+        then:
+        paths
+        paths."/server-context-path/local-path/test/save"
+        paths."/server-context-path/local-path/test/save".get
+        paths."/server-context-path/local-path/test/save/{id}"
+        paths."/server-context-path/local-path/test/save/{id}".get
+    }
+
+    @RestoreSystemProperties
+    void "test append spring spring.webflux.base-path to endpoints"() {
+        given:
+        System.setProperty(OpenApiConfigProperty.SPRING_WEBFLUX_BASE_PATH, "/local-path")
+        System.setProperty(OpenApiConfigProperty.MICRONAUT_OPENAPI_CONTEXT_SERVER_PATH, "/server-context-path")
+
+        buildBeanDefinition('test.MyBean', '''
+package test;
+
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import jakarta.inject.Singleton;
+
+@Controller("/test")
+class TestController {
+
+    @Get("/save{/id}")
+    String save() {
+        return null;
+    }
+}
+
+@Singleton
+class MyBean {}
+''')
+        when:
+        OpenAPI openAPI = Utils.testReference
+        def paths = openAPI.paths
+
+        then:
+        paths
+        paths."/server-context-path/local-path/test/save"
+        paths."/server-context-path/local-path/test/save".get
+        paths."/server-context-path/local-path/test/save/{id}"
+        paths."/server-context-path/local-path/test/save/{id}".get
+    }
+
     void "test parameter with incorrect schema type"() {
 
         buildBeanDefinition('test.MyBean', '''
