@@ -1,4 +1,5 @@
-[OpenAPI Explorer](https://github.com/Authress-Engineering/openapi-explorer) is πlicensed under the Apache License, Version 2.0.
+[OpenAPI Explorer](https://github.com/Authress-Engineering/openapi-explorer) is [licensed under the Apache License, Version 2.0](https://github.com/Authress-Engineering/openapi-explorer/blob/release/2.2/LICENSE).
 
-: https://unpkg.com/openapi-explorer@2.2.730/dist/browser/openapi-explorer.min.js
-Sources repo:
+The minimized version of the OpenAPI Explorer is available at:
+
+https://unpkg.com/openapi-explorer/dist/browser/openapi-explorer.min.js
