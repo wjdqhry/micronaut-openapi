@@ -41,12 +41,13 @@
     @Deprecated
             {{/deprecated}}
     @JsonProperty({{{strValue}}})
-    {{{name}}}({{{value}}}){{^-last}},{{/-last}}{{#-last}};{{/-last}}
+    {{{name}}}({{{value}}}),{{#-last}}
+    ;{{/-last}}
         {{/enumVars}}
     {{/allowableValues}}
 
-    {{#formatSingleLine}}public final static Map<{{{dataType}}}, {{>common/model/enumName}}> VALUE_MAPPING = Map.copyOf(Arrays.stream(values()){{/formatSingleLine}}
-            .collect(Collectors.toMap(v -> v.value{{#isString}}{{#useEnumCaseInsensitive}}.toLowerCase(){{/useEnumCaseInsensitive}}{{/isString}}, Function.identity())));
+    {{#formatSingleLine}}public static final Map<{{{dataType}}}, {{>common/model/enumName}}> VALUE_MAPPING = Map.copyOf(Arrays.stream(values()){{/formatSingleLine}}
+        .collect(Collectors.toMap(v -> v.value{{#isString}}{{#useEnumCaseInsensitive}}.toLowerCase(){{/useEnumCaseInsensitive}}{{/isString}}, Function.identity())));
 
     private final {{{vendorExtensions.baseType}}} value;
 {{^lombok}}

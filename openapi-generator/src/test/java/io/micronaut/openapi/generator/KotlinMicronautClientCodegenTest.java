@@ -349,7 +349,7 @@ class KotlinMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
                     @field:JsonProperty(JSON_PROPERTY_REQUIRED_READ_ONLY)
                     @field:JsonInclude(JsonInclude.Include.USE_DEFAULTS)
                     override var requiredReadOnly: String?,
-                ): BookInfo(name, requiredReadOnly)  {
+                ) : BookInfo(name, requiredReadOnly)  {
                 """);
     }
 
@@ -414,7 +414,7 @@ class KotlinMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
                     @field:NotNull
                     @field:JsonProperty(JSON_PROPERTY_NAME)
                     override var name: String,
-                ): BookInfo(name)  {
+                ) : BookInfo(name)  {
                 """);
         assertFileContains(apiPath + "DetailedBookInfo.kt",
             """
@@ -430,7 +430,7 @@ class KotlinMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
                     @field:NotNull
                     @field:JsonProperty(JSON_PROPERTY_NAME)
                     override var name: String,
-                ): BasicBookInfo(author, name)
+                ) : BasicBookInfo(author, name)
                 """);
     }
 
@@ -702,7 +702,7 @@ class KotlinMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
                     @field:NotNull
                     @field:JsonProperty(JSON_PROPERTY_OP)
                     override var op: String,
-                ): JsonOp(path, op)  {
+                ) : JsonOp(path, op)  {
                 """
         );
     }
@@ -931,7 +931,8 @@ class KotlinMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
             """
                     @Deprecated("")
                     @JsonProperty("34.1")
-                    NUMBER_34_DOT_1(BigDecimal("34.1"));
+                    NUMBER_34_DOT_1(BigDecimal("34.1")),
+                    ;
                 """);
 
         assertFileContains(modelPath + "ByteEnum.kt",
@@ -1295,10 +1296,6 @@ class KotlinMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
                 @Generated("io.micronaut.openapi.generator.KotlinMicronautClientCodegen")
                 @Serializable
                 class Book {
-                
-                    companion object {
-                
-                    }
                 }
                 """);
 
@@ -1339,5 +1336,31 @@ class KotlinMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
                         @QueryValue("status") @Nullable status: List<@NotNull String>? = null
                     ): Mono<List<Pet>>
                 """);
+    }
+
+    @Test
+    void testEquals() {
+
+        var codegen = new KotlinMicronautClientCodegen();
+        codegen.setGenerateSwaggerAnnotations(true);
+        String outputPath = generateFiles(codegen, "src/test/resources/3_0/check-equals.yml", CodegenConstants.APIS, CodegenConstants.MODELS);
+        String path = outputPath + "src/main/kotlin/org/openapitools/";
+
+        assertFileNotContains(path + "model/SalesInvoiceCreateDto.kt", "@JsonPropertyOrder");
+        assertFileContains(path + "model/SalesInvoiceCreateDto.kt", """
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+                    if (javaClass != other?.javaClass) {
+                        return false
+                    }
+                    other as SalesInvoiceCreateDto
+                    return super.equals(other)
+                }
+            
+                override fun hashCode(): Int =
+                    Objects.hash(super.hashCode())
+            """);
     }
 }
