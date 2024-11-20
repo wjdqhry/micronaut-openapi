@@ -1,12 +1,36 @@
 #!/bin/bash
 
-SWAGGER_UI_INPUT="https://unpkg.com/swagger-ui/dist/swagger-ui.js"
+SWAGGER_UI_INPUT="https://unpkg.com/swagger-ui/dist/swagger-ui-bundle.js"
 SWAGGER_UI_OUTPUT="openapi/src/main/resources/templates/swagger-ui/res/swagger-ui-bundle.js"
 
 curl -L -o "$SWAGGER_UI_OUTPUT" "$SWAGGER_UI_INPUT"
 
 if [ $? -eq 0 ]; then
   echo "File downloaded and saved to $SWAGGER_UI_OUTPUT"
+else
+  echo "Failed to download the file"
+  exit 1
+fi
+
+SWAGGER_UI_STANDALONE_INPUT="https://unpkg.com/swagger-ui/dist/swagger-ui-standalone-preset.js"
+SWAGGER_UI_STANDALONE_OUTPUT="openapi/src/main/resources/templates/swagger-ui/res/swagger-ui-standalone-preset.js"
+
+curl -L -o "$SWAGGER_UI_STANDALONE_OUTPUT" "$SWAGGER_UI_STANDALONE_INPUT"
+
+if [ $? -eq 0 ]; then
+  echo "File downloaded and saved to $SWAGGER_UI_STANDALONE_OUTPUT"
+else
+  echo "Failed to download the file"
+  exit 1
+fi
+
+SWAGGER_UI_CSS_INPUT="https://unpkg.com/swagger-ui/dist/swagger-ui.css"
+SWAGGER_UI_CSS_OUTPUT="openapi/src/main/resources/templates/swagger-ui/res/swagger-ui.css"
+
+curl -L -o "$SWAGGER_UI_CSS_OUTPUT" "$SWAGGER_UI_CSS_INPUT"
+
+if [ $? -eq 0 ]; then
+  echo "File downloaded and saved to $SWAGGER_UI_CSS_OUTPUT"
 else
   echo "Failed to download the file"
   exit 1
