@@ -991,7 +991,9 @@ public abstract class AbstractOpenApiEndpointVisitor extends AbstractOpenApiVisi
             }
             UriMatchVariable variable = pathVariables.get(paramName);
             if (variable == null) {
-                warn("Path variable name: '" + paramName + "' not found in path, operation: " + swaggerOperation.getOperationId(), context, parameter);
+                if (!isNullable(parameter)) {
+                    warn("Path variable name: '" + paramName + "' not found in path, operation: " + swaggerOperation.getOperationId(), context, parameter);
+                }
                 return null;
             }
             newParameter = new PathParameter();
