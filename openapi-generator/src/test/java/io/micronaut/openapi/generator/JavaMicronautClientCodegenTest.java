@@ -35,7 +35,7 @@ class JavaMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
         openAPI.setInfo(new Info());
         codegen.preprocessOpenAPI(openAPI);
 
-        assertEquals(codegen.additionalProperties().get(CodegenConstants.HIDE_GENERATION_TIMESTAMP), Boolean.FALSE);
+        assertEquals(Boolean.FALSE, codegen.additionalProperties().get(CodegenConstants.HIDE_GENERATION_TIMESTAMP));
         assertFalse(codegen.isHideGenerationTimestamp());
 
         assertEquals(Boolean.FALSE, codegen.additionalProperties().get(CodegenConstants.HIDE_GENERATION_TIMESTAMP));
@@ -1363,6 +1363,73 @@ class JavaMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
                         @QueryValue(value = "status", defaultValue = "[\\"available\\"]") @Nullable List<@NotNull String> status
                     );
                 """);
+    }
+
+    @Test
+    void testDiscriminatorOverride() {
+
+        var codegen = new JavaMicronautClientCodegen();
+        codegen.setGenerateSwaggerAnnotations(true);
+        String outputPath = generateFiles(codegen, "src/test/resources/3_0/test-override-discriminator.yml", CodegenConstants.APIS, CodegenConstants.MODELS);
+        String path = outputPath + "src/main/java/org/openapitools/";
+
+        assertFileContains(path + "model/AnimalRequest.java",
+            """
+                    /**
+                     * @return the valueType property value
+                     */
+                    public String getValueType() {
+                        return valueType;
+                    }
+                
+                    /**
+                     * Set the valueType property value
+                     *
+                     * @param valueType property value to set
+                     */
+                    public void setValueType(String valueType) {
+                        this.valueType = valueType;
+                    }
+                
+                    /**
+                     * Set valueType in a chainable fashion.
+                     *
+                     * @return The same instance of AnimalRequest for chaining.
+                     */
+                    public AnimalRequest valueType(String valueType) {
+                        this.valueType = valueType;
+                        return this;
+                    }
+                """);
+
+        assertFileContains(path + "model/AnimalResponse.java",
+            """
+                        /**
+                         * @return the valueType property value
+                         */
+                        public String getValueType() {
+                            return valueType;
+                        }
+                    
+                        /**
+                         * Set the valueType property value
+                         *
+                         * @param valueType property value to set
+                         */
+                        public void setValueType(String valueType) {
+                            this.valueType = valueType;
+                        }
+                    
+                        /**
+                         * Set valueType in a chainable fashion.
+                         *
+                         * @return The same instance of AnimalResponse for chaining.
+                         */
+                        public AnimalResponse valueType(String valueType) {
+                            this.valueType = valueType;
+                            return this;
+                        }
+                    """);
     }
 
     @Test
