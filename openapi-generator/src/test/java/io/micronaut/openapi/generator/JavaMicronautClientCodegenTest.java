@@ -381,7 +381,7 @@ class JavaMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
 
         assertFileContains(modelPath + "StringEnum.java", "@JsonProperty(\"starting\")", "STARTING(\"starting\"),",
             """
-                    public final static Map<String, StringEnum> VALUE_MAPPING = Map.copyOf(Arrays.stream(values())
+                    public static final Map<String, StringEnum> VALUE_MAPPING = Map.copyOf(Arrays.stream(values())
                             .collect(Collectors.toMap(v -> v.value, Function.identity())));
                 """,
             """
@@ -804,7 +804,7 @@ class JavaMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
 
         assertFileContains(path + "model/StringEnum.java",
             """
-                    public final static Map<String, StringEnum> VALUE_MAPPING = Map.copyOf(Arrays.stream(values())
+                    public static final Map<String, StringEnum> VALUE_MAPPING = Map.copyOf(Arrays.stream(values())
                             .collect(Collectors.toMap(v -> v.value.toLowerCase(), Function.identity())));
                 """,
             """
@@ -920,7 +920,8 @@ class JavaMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
             """
                     @Deprecated
                     @JsonProperty("34.1")
-                    NUMBER_34_DOT_1(new BigDecimal("34.1"));
+                    NUMBER_34_DOT_1(new BigDecimal("34.1")),
+                    ;
                 """);
 
         assertFileContains(modelPath + "ByteEnum.java",
@@ -1429,5 +1430,34 @@ class JavaMicronautClientCodegenTest extends AbstractMicronautCodegenTest {
                             return this;
                         }
                     """);
+    }
+
+    @Test
+    void testEquals() {
+
+        var codegen = new JavaMicronautClientCodegen();
+        codegen.setGenerateSwaggerAnnotations(true);
+        codegen.setUseOneOfInterfaces(false);
+        String outputPath = generateFiles(codegen, "src/test/resources/3_0/check-equals.yml", CodegenConstants.APIS, CodegenConstants.MODELS);
+        String path = outputPath + "src/main/java/org/openapitools/";
+
+        assertFileNotContains(path + "model/SalesInvoiceCreateDto.java", "@JsonPropertyOrder");
+        assertFileContains(path + "model/SalesInvoiceCreateDto.java", """
+                @Override
+                public boolean equals(Object o) {
+                    if (this == o) {
+                        return true;
+                    }
+                    if (o == null || getClass() != o.getClass()) {
+                        return false;
+                    }
+                    return super.equals(o);
+                }
+            
+                @Override
+                public int hashCode() {
+                    return Objects.hash(super.hashCode());
+                }
+            """);
     }
 }

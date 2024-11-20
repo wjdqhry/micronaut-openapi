@@ -1889,6 +1889,7 @@ public abstract class AbstractMicronautJavaCodegen<T extends GeneratorOptionsBui
                 }
             }
 
+            model.vendorExtensions.put("hasOwnVars", !model.vars.isEmpty());
             model.vendorExtensions.put("withMultipleVars", model.vars.size() > 1);
             if (!requiredParentVarsWithoutDiscriminator.isEmpty()) {
                 model.vendorExtensions.put("requiredParentVarsWithoutDiscriminator", requiredParentVarsWithoutDiscriminator);
@@ -1929,6 +1930,7 @@ public abstract class AbstractMicronautJavaCodegen<T extends GeneratorOptionsBui
             // just for tests
             if (System.getProperty("micronaut.test.no-vars") != null) {
                 model.hasVars = false;
+                model.vendorExtensions.put("hasOwnVars", false);
                 model.vendorExtensions.put("requiredVarsWithoutDiscriminator", Collections.emptyList());
                 model.vendorExtensions.put("optionalVars", Collections.emptyList());
                 model.vendorExtensions.put("requiredVars", Collections.emptyList());

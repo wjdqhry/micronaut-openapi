@@ -1,0 +1,144 @@
+openapi: 3.0.3
+info:
+  title: Sample App API
+  version: 1.0.0
+tags:
+  - name: Invoice
+paths:
+  /api/invoice:
+    post:
+      tags:
+        - Invoice
+      operationId: createInvoice
+      summary: Creates new sale invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/SalesInvoiceCreateDto'
+                - $ref: '#/components/schemas/CurrencyInvoiceCreateDto'
+      responses:
+        201:
+          description: Invoice created correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceIdDto'
+        403:
+          description: No access to cost center with Manager rights
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+  /api/invoice/{id}:
+    get:
+      tags:
+        - Invoice
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+      operationId: loadInvoice
+      summary: load invoice
+      responses:
+        200:
+          description: Sales or Currency invoice
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/SalesInvoiceDto'
+                  - $ref: '#/components/schemas/CurrencyInvoiceDto'
+        403:
+          description: No access to cost center with Manager rights
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+components:
+  schemas:
+    DocType:
+      type: string
+      enum: [ FS, FW, FK, FP ]
+      default: "FS"
+    BaseInvoiceDto:
+      type: object
+      required:
+        - sellerVatId
+        - docType
+      properties:
+        docType:
+          $ref: '#/components/schemas/DocType'
+        sellerVatId:
+          type: string
+          maxLength: 10
+      discriminator:
+        propertyName: docType
+        mapping:
+          FS: "#/components/schemas/SalesInvoiceCreateDto"
+          FW: "#/components/schemas/CurrencyInvoiceCreateDto"
+    SalesInvoiceCreateDto:
+      allOf:
+        - $ref: '#/components/schemas/BaseInvoiceDto'
+    SalesInvoiceDto:
+      allOf:
+        - $ref: '#/components/schemas/BaseInvoiceDto'
+        - $ref: '#/components/schemas/InvoiceCommonFields'
+    CurrencyInvoiceCreateDto:
+      allOf:
+        - $ref: '#/components/schemas/SalesInvoiceCreateDto'
+        - type: object
+          properties:
+            currency:
+              type: string
+              description: "Currency of the invoice"
+              default: "PLN"
+            exchangeRate:
+              type: number
+              description: "Exchange rate for the currency"
+            exchangeDate:
+              type: string
+              format: date
+          required:
+            - currency
+            - exchangeRate
+            - exchangeDate
+    CurrencyInvoiceDto:
+      allOf:
+        - $ref: '#/components/schemas/CurrencyInvoiceCreateDto'
+        - $ref: '#/components/schemas/InvoiceCommonFields'
+    InvoiceCommonFields:
+      properties:
+        issuedUser:
+          type: string
+        issueDate:
+          type: string
+          format: date
+    InvoiceIdDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        docNumber:
+          type: string
+    ErrorDTO:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        retryable:
+          type: boolean
+        severity:
+          type: string
+          enum: [ WARN, ERROR, FATAL ]
+        params:
+          type: object
+          additionalProperties:
+            type: string

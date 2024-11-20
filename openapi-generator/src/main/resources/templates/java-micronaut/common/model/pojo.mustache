@@ -45,18 +45,18 @@
 @Serdeable
 {{/micronaut_serde_jackson}}
 {{#jackson}}
-    {{#hasVars}}
+    {{#vendorExtensions.hasOwnVars}}
         {{#vendorExtensions.withMultipleVars}}
 @JsonPropertyOrder({{openbrace}}
             {{#vars}}
-    {{classname}}.JSON_PROPERTY_{{nameInSnakeCase}}{{^-last}},{{/-last}}
+    {{classname}}.JSON_PROPERTY_{{nameInSnakeCase}},
             {{/vars}}
 {{closebrace}})
         {{/vendorExtensions.withMultipleVars}}
         {{^vendorExtensions.withMultipleVars}}
 @JsonPropertyOrder({{#vars}}{{classname}}.JSON_PROPERTY_{{nameInSnakeCase}}{{/vars}})
         {{/vendorExtensions.withMultipleVars}}
-    {{/hasVars}}
+    {{/vendorExtensions.hasOwnVars}}
 {{/jackson}}
 {{#additionalModelTypeAnnotations}}
 {{{.}}}
@@ -447,15 +447,15 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#vendorE
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        {{#hasVars}}
-        {{classname}} {{classVarName}} = ({{classname}}) o;
-        return {{#vars}}{{#isByteArray}}Arrays{{/isByteArray}}{{^isByteArray}}Objects{{/isByteArray}}.equals({{name}}, {{classVarName}}.{{name}}){{^-last}} &&
-            {{/-last}}{{/vars}}{{#parent}} &&
-            super.equals(o){{/parent}};
-        {{/hasVars}}
-        {{^hasVars}}
+        {{#vendorExtensions.hasOwnVars}}
+        var {{classVarName}} = ({{classname}}) o;
+        return {{#vars}}{{#isByteArray}}Arrays{{/isByteArray}}{{^isByteArray}}Objects{{/isByteArray}}.equals({{name}}, {{classVarName}}.{{name}}){{^-last}}
+            && {{/-last}}{{/vars}}{{#parent}}
+            && super.equals(o){{/parent}};
+        {{/vendorExtensions.hasOwnVars}}
+        {{^vendorExtensions.hasOwnVars}}
         return {{#parent}}super.equals(o){{/parent}}{{^parent}}true{{/parent}};
-        {{/hasVars}}
+        {{/vendorExtensions.hasOwnVars}}
     {{/useReflectionEqualsHashCode}}
     }
 
@@ -465,7 +465,7 @@ public class {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{{#vendorE
         return HashCodeBuilder.reflectionHashCode(this);
     {{/useReflectionEqualsHashCode}}
     {{^useReflectionEqualsHashCode}}
-        return Objects.hash({{#vars}}{{^isByteArray}}{{name}}{{/isByteArray}}{{#isByteArray}}Arrays.hashCode({{name}}){{/isByteArray}}{{^-last}}, {{/-last}}{{/vars}}{{#parent}}{{#hasVars}}, {{/hasVars}}super.hashCode(){{/parent}});
+        return Objects.hash({{#vars}}{{^isByteArray}}{{name}}{{/isByteArray}}{{#isByteArray}}Arrays.hashCode({{name}}){{/isByteArray}}{{^-last}}, {{/-last}}{{/vars}}{{#parent}}{{#vendorExtensions.hasOwnVars}}, {{/vendorExtensions.hasOwnVars}}super.hashCode(){{/parent}});
     {{/useReflectionEqualsHashCode}}
     }
 

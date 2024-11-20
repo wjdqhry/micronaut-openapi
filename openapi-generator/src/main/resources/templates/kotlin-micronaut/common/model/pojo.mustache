@@ -19,13 +19,13 @@
 @Serdeable
 {{/micronaut_serde_jackson}}
 {{#jackson}}
-    {{#hasVars}}
+    {{#vendorExtensions.hasOwnVars}}
 @JsonPropertyOrder(
     {{#vars}}
-        {{classname}}.JSON_PROPERTY_{{nameInSnakeCase}}{{^-last}},{{/-last}}
+    {{classname}}.JSON_PROPERTY_{{nameInSnakeCase}},
     {{/vars}}
 )
-    {{/hasVars}}
+    {{/vendorExtensions.hasOwnVars}}
 {{/jackson}}
 {{#additionalModelTypeAnnotations}}
 {{{.}}}
@@ -94,50 +94,38 @@
     {{/formatNoEmptyLines}}
     {{/vendorExtensions.optionalVars}}
 {{/vendorExtensions.withInheritance}}
-{{#hasVars}}){{/hasVars}}{{#parent}}: {{{parent}}}({{#vendorExtensions.requiredParentVarsWithoutDiscriminator}}{{{name}}}{{^-last}}, {{/-last}}{{/vendorExtensions.requiredParentVarsWithoutDiscriminator}}) {{/parent}}{{#vendorExtensions.x-implements}}{{#parent}}, {{/parent}}{{^parent}}: {{/parent}}{{^-first}}, {{/-first}}{{{.}}}{{/vendorExtensions.x-implements}} {{openbrace}}
+{{#hasVars}}){{/hasVars}}{{#parent}} : {{{parent}}}({{#vendorExtensions.requiredParentVarsWithoutDiscriminator}}{{{name}}}{{^-last}}, {{/-last}}{{/vendorExtensions.requiredParentVarsWithoutDiscriminator}}){{/parent}}{{#vendorExtensions.x-implements}}{{#parent}}, {{/parent}}{{^parent}}: {{/parent}}{{^-first}}, {{/-first}}{{{.}}}{{/vendorExtensions.x-implements}} {{openbrace}}
 
     {{#vendorExtensions.withInheritance}}
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-    {{#parent}}
-        if (!super.equals(other)) return false
-    {{/parent}}
+        if (this === other) {
+            return true
+        }
+        if (javaClass != other?.javaClass) {
+            return false
+        }
         other as {{classname}}
-    {{#hasVars}}
-        {{#vars}}
-        if ({{{name}}} != other.{{{name}}}) return false
-        {{/vars}}
-    {{/hasVars}}
-        return true
+    {{#vendorExtensions.hasOwnVars}}
+        return {{#vars}}{{^-first}}
+                && {{/-first}}{{{name}}} == other.{{{name}}}{{/vars}}{{#parent}}
+                && super.equals(other){{/parent}}
+    {{/vendorExtensions.hasOwnVars}}
+    {{^vendorExtensions.hasOwnVars}}
+        return {{#parent}}super.equals(other){{/parent}}{{^parent}}true{{/parent}}
+    {{/vendorExtensions.hasOwnVars}}
     }
 
-    override fun hashCode(): Int {
-        var result = {{#parent}}super.hashCode(){{/parent}}{{^parent}}{{#vars.0}}{{{name}}}{{#isNullable}}?{{/isNullable}}.hashCode(){{#isNullable}} ?: 0{{/isNullable}}{{/vars.0}}{{/parent}}
-    {{#hasVars}}
-    {{#vars}}
-        {{#parent}}
-        result = 31 * result + {{#isNullable}}({{/isNullable}}{{{name}}}{{#isNullable}}?{{/isNullable}}.hashCode(){{#isNullable}} ?: 0){{/isNullable}}
-        {{/parent}}
-        {{^parent}}
-            {{^-first}}
-        result = {{#-first}}{{#parent}}31 * result + {{/parent}}{{/-first}}{{^-first}}31 * result + {{/-first}}{{#isNullable}}({{/isNullable}}{{{name}}}{{#isNullable}}?{{/isNullable}}.hashCode(){{#isNullable}} ?: 0){{/isNullable}}
-            {{/-first}}
-        {{/parent}}
-    {{/vars}}
-    {{/hasVars}}
-        return result
-    }
+    override fun hashCode(): Int =
+        Objects.hash({{#vars}}{{^isByteArray}}{{name}}{{/isByteArray}}{{#isByteArray}}Arrays.hashCode({{name}}){{/isByteArray}}{{^-last}}, {{/-last}}{{/vars}}{{#parent}}{{#vendorExtensions.hasOwnVars}}, {{/vendorExtensions.hasOwnVars}}super.hashCode(){{/parent}})
 
-    override fun toString(): String {
+    override fun toString(): String =
     {{#hasVars}}
-        return "{{classname}}({{#allVars}}{{{vendorExtensions.realName}}}='${{{name}}}'{{^-last}}, {{/-last}}{{/allVars}})"
+        "{{classname}}({{#allVars}}{{{vendorExtensions.realName}}}='${{{name}}}'{{^-last}}, {{/-last}}{{/allVars}})"
     {{/hasVars}}
     {{^hasVars}}
-        return "{{classname}}()"
+        "{{classname}}()"
     {{/hasVars}}
-    }
     {{/vendorExtensions.withInheritance}}
 
     {{#vars}}
@@ -158,6 +146,7 @@
 
     {{/vars}}
 
+    {{#vendorExtensions.hasOwnVars}}
     companion object {
     {{#serializableModel}}
 
@@ -170,4 +159,15 @@
         const val JSON_PROPERTY_{{nameInSnakeCase}} = "{{baseName}}"
     {{/vars}}
     }
+    {{/vendorExtensions.hasOwnVars}}
+    {{^vendorExtensions.hasOwnVars}}
+        {{#serializableModel}}
+    companion object {
+
+        @Serial
+        @JvmStatic
+        private val serialVersionUID = {{{vendorExtensions.serialId}}}L
+    }
+        {{/serializableModel}}
+    {{/vendorExtensions.hasOwnVars}}
 {{closebrace}}

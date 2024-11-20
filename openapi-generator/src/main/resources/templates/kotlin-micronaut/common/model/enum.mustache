@@ -24,7 +24,7 @@
 {{{.}}}
 {{/additionalEnumTypeAnnotations}}
 {{#nonPublicApi}}internal {{/nonPublicApi}}{{#formatSingleLine}}enum class {{>common/model/enumName}}{{/formatSingleLine}}(
-    @get:JsonValue val value: {{{dataType}}}
+    @get:JsonValue val value: {{{dataType}}},
 ) {
 
     {{#allowableValues}}
@@ -41,13 +41,12 @@
     @Deprecated("")
             {{/deprecated}}
     @JsonProperty({{{strValue}}})
-    {{{name}}}({{{value}}}){{^-last}},{{/-last}}{{#-last}};{{/-last}}
+    {{{name}}}({{{value}}}),{{#-last}}
+    ;{{/-last}}
         {{/enumVars}}
     {{/allowableValues}}
 
-    override fun toString(): String {
-        return {{#isString}}value{{/isString}}{{^isString}}"$value"{{/isString}}
-    }
+    override fun toString(): String = {{#isString}}value{{/isString}}{{^isString}}"$value"{{/isString}}
 
     companion object {
 

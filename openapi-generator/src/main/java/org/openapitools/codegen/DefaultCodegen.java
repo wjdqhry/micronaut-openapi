@@ -274,9 +274,9 @@ public class DefaultCodegen implements CodegenConfig {
     // sort operations by default
     protected boolean skipSortingOperations = false;
 
-    protected final static Pattern XML_MIME_PATTERN = Pattern.compile("(?i)application/(.*)[+]?xml(;.*)?");
-    protected final static Pattern JSON_MIME_PATTERN = Pattern.compile("(?i)application/json(;.*)?");
-    protected final static Pattern JSON_VENDOR_MIME_PATTERN = Pattern.compile("(?i)application/vnd.(.*)+json(;.*)?");
+    protected static final Pattern XML_MIME_PATTERN = Pattern.compile("(?i)application/(.*)[+]?xml(;.*)?");
+    protected static final Pattern JSON_MIME_PATTERN = Pattern.compile("(?i)application/json(;.*)?");
+    protected static final Pattern JSON_VENDOR_MIME_PATTERN = Pattern.compile("(?i)application/vnd.(.*)+json(;.*)?");
     private static final Pattern COMMON_PREFIX_ENUM_NAME = Pattern.compile("[a-zA-Z0-9]+\\z");
 
     /**
@@ -3258,7 +3258,7 @@ public class DefaultCodegen implements CodegenConfig {
             for (CodegenProperty prop : m.vars) {
                 postProcessModelProperty(m, prop);
             }
-            m.hasVars = m.vars.size() > 0;
+            m.hasVars = !m.vars.isEmpty();
         }
         if (m.allVars != null) {
             for (CodegenProperty prop : m.allVars) {

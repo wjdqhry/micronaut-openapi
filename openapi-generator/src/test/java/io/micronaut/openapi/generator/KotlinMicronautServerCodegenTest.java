@@ -388,7 +388,7 @@ class KotlinMicronautServerCodegenTest extends AbstractMicronautCodegenTest {
                     @field:JsonProperty(JSON_PROPERTY_REQUIRED_READ_ONLY)
                     @field:JsonInclude(JsonInclude.Include.USE_DEFAULTS)
                     override var requiredReadOnly: String? = null,
-                ): BookInfo(name, requiredReadOnly)  {
+                ) : BookInfo(name, requiredReadOnly)  {
                 """);
     }
 
@@ -424,7 +424,7 @@ class KotlinMicronautServerCodegenTest extends AbstractMicronautCodegenTest {
                     @field:Schema(name = "name", requiredMode = Schema.RequiredMode.REQUIRED)
                     @field:JsonProperty(JSON_PROPERTY_NAME)
                     override var name: String,
-                ): BookInfo(name) {
+                ) : BookInfo(name) {
                 """);
         assertFileContains(apiPath + "DetailedBookInfo.kt",
             """
@@ -443,7 +443,7 @@ class KotlinMicronautServerCodegenTest extends AbstractMicronautCodegenTest {
                     @field:Schema(name = "name", requiredMode = Schema.RequiredMode.REQUIRED)
                     @field:JsonProperty(JSON_PROPERTY_NAME)
                     override var name: String,
-                ): BasicBookInfo(author, name) {
+                ) : BasicBookInfo(author, name) {
                 """);
     }
 
