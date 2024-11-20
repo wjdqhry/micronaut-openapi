@@ -1004,7 +1004,7 @@ public final class ConfigUtils {
      * @param typeArgs type arguments
      * @param classElement class element
      */
-    record CustomSchema(
+    public record CustomSchema(
         List<String> typeArgs,
         ClassElement classElement
     ) {
