@@ -373,7 +373,6 @@ input[type="password"]::placeholder {
   opacity:1;
 }
 
-
 input[type="file"]{
   font-family: var(--font-regular);
   padding:2px;
