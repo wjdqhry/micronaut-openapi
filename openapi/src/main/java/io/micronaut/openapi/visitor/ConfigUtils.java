@@ -210,12 +210,25 @@ public final class ConfigUtils {
         Environment environment = getEnv(context);
         if (environment != null) {
             for (Map.Entry<String, Object> entry : environment.getProperties(MICRONAUT_OPENAPI_SCHEMA, StringConvention.RAW).entrySet()) {
+
                 String configuredClassName = entry.getKey();
+                // Remove this check, after we remove MICRONAUT_OPENAPI_SCHEMA property
+                String prop = MICRONAUT_OPENAPI_SCHEMA + StringUtil.DOT + configuredClassName;
+                if (isMicronautProperty(prop)) {
+                    continue;
+                }
+
                 String targetClassName = (String) entry.getValue();
                 readCustomSchema(configuredClassName, targetClassName, customSchemas, context);
             }
             for (Map.Entry<String, Object> entry : environment.getProperties(MICRONAUT_OPENAPI_SCHEMA_MAPPING, StringConvention.RAW).entrySet()) {
                 String configuredClassName = entry.getKey();
+
+                // Remove this check, after we remove MICRONAUT_OPENAPI_SCHEMA property
+                String prop = MICRONAUT_OPENAPI_SCHEMA + StringUtil.DOT + configuredClassName;
+                if (isMicronautProperty(prop)) {
+                    continue;
+                }
                 String targetClassName = (String) entry.getValue();
                 readCustomSchema(configuredClassName, targetClassName, customSchemas, context);
             }
@@ -236,6 +249,18 @@ public final class ConfigUtils {
         customSchema = customSchemas.get(className);
 
         return customSchema != null ? customSchema.classElement : null;
+    }
+
+    private static boolean isMicronautProperty(String prop) {
+        return prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_PREFIX)
+            || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_POSTFIX)
+            || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_DECORATOR_PREFIX)
+            || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_DECORATOR_POSTFIX)
+            || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_NAME_SEPARATOR_EMPTY)
+            || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_NAME_SEPARATOR_GENERIC)
+            || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_NAME_SEPARATOR_INNER_CLASS)
+            || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_DUPLICATE_RESOLUTION)
+            || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_EXTRA_ENABLED);
     }
 
     private static String getClassNameWithGenerics(String className, Map<String, ClassElement> typeArgs) {
@@ -734,24 +759,19 @@ public final class ConfigUtils {
     private static void readCustomSchemas(Properties props, Map<String, CustomSchema> customSchemas, VisitorContext context) {
 
         for (String prop : props.stringPropertyNames()) {
-            if (!prop.startsWith(MICRONAUT_OPENAPI_SCHEMA)
-                || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_PREFIX)
-                || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_POSTFIX)
-                || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_DECORATOR_PREFIX)
-                || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_DECORATOR_POSTFIX)
-                || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_NAME_SEPARATOR_EMPTY)
-                || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_NAME_SEPARATOR_GENERIC)
-                || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_NAME_SEPARATOR_INNER_CLASS)
-                || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_DUPLICATE_RESOLUTION)
-                || prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_EXTRA_ENABLED)
-            ) {
+
+            // Remove this check, after we remove MICRONAUT_OPENAPI_SCHEMA property
+            if (isMicronautProperty(prop)) {
                 continue;
             }
+
             String className;
             if (prop.startsWith(MICRONAUT_OPENAPI_SCHEMA_MAPPING)) {
                 className = prop.substring(MICRONAUT_OPENAPI_SCHEMA_MAPPING.length() + 1);
-            } else {
+            } else if (prop.startsWith(MICRONAUT_OPENAPI_SCHEMA)) {
                 className = prop.substring(MICRONAUT_OPENAPI_SCHEMA.length() + 1);
+            } else {
+                continue;
             }
             String targetClassName = props.getProperty(prop);
             readCustomSchema(className, targetClassName, customSchemas, context);
@@ -764,7 +784,7 @@ public final class ConfigUtils {
         }
         ClassElement targetClassElement = ContextUtils.getClassElement(targetClassName, context);
         if (targetClassElement == null) {
-            warn("Can't find class " + targetClassName + " in classpath. Skip it.", context);
+            warn("Can't find class " + targetClassName + " for className " + className + " in classpath. Custom schemas: " + customSchemas + ". Skip it.", context);
             return;
         }
 

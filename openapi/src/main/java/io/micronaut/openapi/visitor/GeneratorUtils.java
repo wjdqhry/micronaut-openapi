@@ -235,8 +235,14 @@ public final class GeneratorUtils {
             }
         }
 
+        // check if upper case values equals with enum var names
+        var generatedEnumVarNames = new ArrayList<String>(schema.getEnum().size());
+        for (var enumVal : schema.getEnum()) {
+            generatedEnumVarNames.add(enumVal.toString().toUpperCase());
+        }
+
         if (!enumVarNameList.isEmpty() && !extensions.containsKey(ENUM_VAR_NAMES)
-            && !schema.getEnum().equals(enumVarNameList)) {
+            && !generatedEnumVarNames.equals(enumVarNameList)) {
             extensions.put(ENUM_VAR_NAMES, enumVarNameList);
         }
         if (!enumVarDocList.isEmpty() && !extensions.containsKey(ENUM_DESCRIPTIONS)) {
