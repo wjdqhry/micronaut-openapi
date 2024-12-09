@@ -6,7 +6,8 @@ snippet::io.micronaut.configuration.openapi.docs.Application[tags="imports,clazz
 With that in place, you compile your project and a OpenAPI YAML file will be generated to the `META-INF/swagger` directory of your project's class output. For example, the above configuration generates:
 
 * For Java `build/classes/java/main/META-INF/swagger/hello-world-0.0.yml`
-* For Kotlin `build/tmp/kapt3/classes/main/META-INF/swagger/hello-world-0.0.yml`
+* For Kotlin kapt `build/tmp/kapt3/classes/main/META-INF/swagger/hello-world-0.0.yml`
+* For Kotlin ksp `build/generated/ksp/main/resources/META-INF/swagger/hello-world-0.0.yml`
 
 The previously defined annotations will produce YAML like the following:
 
